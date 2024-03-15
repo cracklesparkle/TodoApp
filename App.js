@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, Modal, SafeAreaView, StyleSheet, StatusBar, Pressable } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, Modal, SafeAreaView, StyleSheet, StatusBar, Pressable, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { FontAwesome } from '@expo/vector-icons'
@@ -85,20 +85,24 @@ const App = () => {
     setTaskDescription(taskToEdit.description);
     setTaskDeadline(taskToEdit.deadline);
     setIsModalVisible(true);
-  };
+  }
+
+  const Checkbox = ({ checked, onPress }) => (
+    <TouchableOpacity onPress={onPress}>
+      <FontAwesome name={checked ? 'check-square' : 'square-o'} size={24} color={checked ? 'green' : 'black'} />
+    </TouchableOpacity>
+  );
 
   const renderItem = ({ item, index }) => (
-    <TouchableOpacity onPress={() => toggleTaskCompletion(index)}>
+    <TouchableOpacity onPress={() => editTask(index)}>
       <View style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <View>
-          <Text style={{ fontSize: 18, fontWeight: 'bold', textDecorationLine: item.completed ? 'line-through' : 'none' }}>{item.name}</Text>
-          <Text>{item.description}</Text>
-          <Text>{item.deadline ? `Deadline: ${item.deadline}` : item.deadline}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: 32}}>
+            <Checkbox checked={item.completed} onPress={() => toggleTaskCompletion(index)} />
+          </View>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', textDecorationLine: item.completed ? 'line-through' : 'none', marginLeft: 10 }}>{item.name}</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 20 }}>
-          <Pressable title="Edit" onPress={() => editTask(index)}>
-            <FontAwesome name='edit' size={24} color="black"/>
-          </Pressable>
           <Pressable title="Remove" onPress={() => removeTask(index)}>
             <FontAwesome name="remove" size={24} color="black" />
           </Pressable>
@@ -106,6 +110,7 @@ const App = () => {
       </View>
     </TouchableOpacity>
   );
+
 
   const showDateTimePicker = () => {
     setIsDateTimePickerVisible(true);
@@ -123,7 +128,7 @@ const App = () => {
   return (
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight }}>
       <View style={styles.container}>
-        <Button title="Add Task" onPress={() => setIsModalVisible(true)} />
+        <Button title="Добавить задачу" onPress={() => setIsModalVisible(true)} />
 
         <Modal visible={isModalVisible} animationType="slide" transparent>
           <View style={{
@@ -134,14 +139,14 @@ const App = () => {
             gap: 20
           }}>
             <TextInput
-              style={{ padding: 10, borderWidth: 1, borderColor: '#ccc', width: '80%' }}
-              placeholder="Task Name"
+              style={{ padding: 10, borderWidth: 1, borderColor: '#ccc', width: '80%', borderRadius: 8 }}
+              placeholder="Название"
               value={taskName}
               onChangeText={text => setTaskName(text)}
             />
             <TextInput
-              style={{ padding: 10, borderWidth: 1, borderColor: '#ccc', width: '80%' }}
-              placeholder="Task Description"
+              style={{ padding: 10, borderWidth: 1, borderColor: '#ccc', width: '80%', borderRadius: 8 }}
+              placeholder="Описание"
               value={taskDescription}
               onChangeText={text => setTaskDescription(text)}
             />
@@ -157,7 +162,7 @@ const App = () => {
           </View>
         </Modal>
 
-        <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 20 }}>Tasks:</Text>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 20 }}>Задачи:</Text>
         <FlatList
           data={tasks}
           renderItem={renderItem}
